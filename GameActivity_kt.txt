@@ -1,0 +1,783 @@
+package com.example.virib.six_card_golf_4
+
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+
+class GameActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_game)
+
+        //player socres
+        val p1ScoreLable: TextView? = findViewById<TextView>(R.id.pOneViewScore)
+        val p2ScoreLable: TextView? = findViewById<TextView>(R.id.pTwoViewScore)
+        val p3ScoreLable: TextView? = findViewById<TextView>(R.id.pThreeViewScore)
+        val p4ScoreLable: TextView? = findViewById<TextView>(R.id.pFourViewScore)
+
+        startGame()
+        /*
+        calculateScore(p1Hand,p1)
+        calculateScore(p2Hand,p2)
+        calculateScore(p3Hand,p3)
+        calculateScore(p4Hand,p4)
+        p1ScoreLable?.text = p1.score.toString()
+        p2ScoreLable?.text = p2.score.toString()
+        p3ScoreLable?.text = p3.score.toString()
+        p4ScoreLable?.text = p4.score.toString()
+        resetRound()
+        resetPlayers()
+        */
+    }
+    //Main Lists
+    var p1Hand = mutableListOf<playingCard>()
+    var p2Hand = mutableListOf<playingCard>()
+    var p3Hand = mutableListOf<playingCard>()
+    var p4Hand = mutableListOf<playingCard>()
+    var discardPile = mutableListOf<playingCard>()
+    var disSwap = mutableListOf<playingCard>()
+    val deck = mutableListOf<playingCard>(HA,HK,HQ,HJ,HTen,HNine,HEight,HSeven,HSix,HFive,HFour,HThree,HTwo,
+        DA,DK,DQ,DJ,DTen,DNine,DEight,DSeven,DSix,DFive,DFour,DThree,DTwo,
+        CA,CK,CQ,CJ,CTen,CNine,CEight,CSeven,CSix,CFive,CFour,CThree,CTwo,
+        SA,SK,SQ,SJ,STen,SNine,SEight,SSeven,SSix,SFive,SFour,SThree,STwo)
+    //max number of rounds 8
+    var numOfRounds = 0
+    //Players
+    var p1 = object : player ("PlayerOne", 0, false,2){}
+    var p2 = object : player ("PlayerTwo", 0, false,2){}
+    var p3 = object : player ("PlayerThree", 0, false,2){}
+    var p4 = object : player ("PlayerFour", 0, false,2){}
+    //draw card discard pile flag
+    var cardFromDisPile = false
+
+    //Start the Game
+    fun startGame(){
+        //find buttons
+        val drawButton: Button? = findViewById<Button>(R.id.drawCardButton)
+        val drawDiscardButton: Button? = findViewById<Button>(R.id.drawPileDiscard)
+        val discardTradeButton: Button? = findViewById<Button>(R.id.discardPileTrade)
+        val drawTextView: TextView? = findViewById<TextView>(R.id.drawPileView)
+        //find views
+        val p1TextView: TextView? = findViewById<TextView>(R.id.pOneViewHand)
+        val p2TextView: TextView? = findViewById<TextView>(R.id.pTwoViewHand)
+        val p3TextView: TextView? = findViewById<TextView>(R.id.pThreeViewHand)
+        val p4TextView: TextView? = findViewById<TextView>(R.id.pFourViewHand)
+        val discardTextView: TextView? = findViewById<TextView>(R.id.discardPileView)
+
+        //Buttons
+        val p1Show2Button: Button? = findViewById<Button>(R.id.pOneShowTwo)
+        val p1Show3Button: Button? = findViewById<Button>(R.id.pOneShowThree)
+        val p1Show4Button: Button? = findViewById<Button>(R.id.pOneShowFour)
+        val p1Show5Button: Button? = findViewById<Button>(R.id.pOneShowFive)
+        val p1Trade0Button: Button? = findViewById<Button>(R.id.pOneTradeZero)
+        val p1Trade1Button: Button? = findViewById<Button>(R.id.pOneTradeOne)
+        val p1Trade2Button: Button? = findViewById<Button>(R.id.pOneTradeTwo)
+        val p1Trade3Button: Button? = findViewById<Button>(R.id.pOneTradeThree)
+        val p1Trade4Button: Button? = findViewById<Button>(R.id.pOneTradeFour)
+        val p1Trade5Button: Button? = findViewById<Button>(R.id.pOneTradeFive)
+
+        val p2Show2Button: Button? = findViewById<Button>(R.id.pTwoShowTwo)
+        val p2Show3Button: Button? = findViewById<Button>(R.id.pTwoShowThree)
+        val p2Show4Button: Button? = findViewById<Button>(R.id.pTwoShowFour)
+        val p2Show5Button: Button? = findViewById<Button>(R.id.pTwoShowFive)
+        val p2Trade0Button: Button? = findViewById<Button>(R.id.pTwoTradeZero)
+        val p2Trade1Button: Button? = findViewById<Button>(R.id.pTwoTradeOne)
+        val p2Trade2Button: Button? = findViewById<Button>(R.id.pTwoTradeTwo)
+        val p2Trade3Button: Button? = findViewById<Button>(R.id.pTwoTradeThree)
+        val p2Trade4Button: Button? = findViewById<Button>(R.id.pTwoTradeFour)
+        val p2Trade5Button: Button? = findViewById<Button>(R.id.pTwoTradeFive)
+
+        val p3Show2Button: Button? = findViewById<Button>(R.id.pThreeShowTwo)
+        val p3Show3Button: Button? = findViewById<Button>(R.id.pThreeShowThree)
+        val p3Show4Button: Button? = findViewById<Button>(R.id.pThreeShowFour)
+        val p3Show5Button: Button? = findViewById<Button>(R.id.pThreeShowFive)
+        val p3Trade0Button: Button? = findViewById<Button>(R.id.pThreeTradeZero)
+        val p3Trade1Button: Button? = findViewById<Button>(R.id.pThreeTradeOne)
+        val p3Trade2Button: Button? = findViewById<Button>(R.id.pThreeTradeTwo)
+        val p3Trade3Button: Button? = findViewById<Button>(R.id.pThreeTradeThree)
+        val p3Trade4Button: Button? = findViewById<Button>(R.id.pThreeTradeFour)
+        val p3Trade5Button: Button? = findViewById<Button>(R.id.pThreeTradeFive)
+
+        val p4Show2Button: Button? = findViewById<Button>(R.id.pFourShowTwo)
+        val p4Show3Button: Button? = findViewById<Button>(R.id.pFourShowThree)
+        val p4Show4Button: Button? = findViewById<Button>(R.id.pFourShowFour)
+        val p4Show5Button: Button? = findViewById<Button>(R.id.pFourShowFive)
+        val p4Trade0Button: Button? = findViewById<Button>(R.id.pFourTradeZero)
+        val p4Trade1Button: Button? = findViewById<Button>(R.id.pFourTradeOne)
+        val p4Trade2Button: Button? = findViewById<Button>(R.id.pFourTradeTwo)
+        val p4Trade3Button: Button? = findViewById<Button>(R.id.pFourTradeThree)
+        val p4Trade4Button: Button? = findViewById<Button>(R.id.pFourTradeFour)
+        val p4Trade5Button: Button? = findViewById<Button>(R.id.pFourTradeFive)
+
+        //
+        shuffleCards(deck)
+
+        //Deal Cards to Players
+        for (i in 0..5) {
+            p1Hand.add(deck.removeAt(0))
+            p2Hand.add(deck.removeAt(0))
+            p3Hand.add(deck.removeAt(0))
+            p4Hand.add(deck.removeAt(0))
+        }
+        //Flip one card for the discard pile
+        discardPile.add(deck.removeAt(0))
+
+        //Show table
+        showCard(p1TextView, p1Hand)
+        showCard(p2TextView, p2Hand)
+        showCard(p3TextView, p3Hand)
+        showCard(p4TextView, p4Hand)
+        discardTextView?.text = discardPile[0].name
+
+        //mark cards as face up
+        for (item in 0 until 2) {
+            p1Hand[item].faceUp = true
+            p2Hand[item].faceUp = true
+            p3Hand[item].faceUp = true
+            p4Hand[item].faceUp = true
+        }
+        //Discard card is now face up
+        discardPile[0].faceUp = true
+
+        //p1 turn
+        p1Show2Button?.setOnClickListener {
+            p1Hand[2].faceUp = true
+            showCard(p1TextView, p1Hand)
+            p1.faceUpCards++
+        }
+        p1Show3Button?.setOnClickListener {
+            p1Hand[3].faceUp = true
+            showCard(p1TextView, p1Hand)
+            p1.faceUpCards++
+        }
+        p1Show4Button?.setOnClickListener {
+            p1Hand[4].faceUp = true
+            showCard(p1TextView, p1Hand)
+            p1.faceUpCards++
+        }
+        p1Show5Button?.setOnClickListener {
+            p1Hand[5].faceUp = true
+            showCard(p1TextView, p1Hand)
+            p1.faceUpCards++
+        }
+        discardTradeButton?.setOnClickListener {
+            cardFromDisPile = true
+        }
+        drawButton?.setOnClickListener {
+            drawTextView?.text = deck[0].name
+            deck[0].faceUp = true
+        }
+        drawDiscardButton?.setOnClickListener {
+            swapCard(deck, 0, discardPile, 0)
+            discardTextView?.text = discardPile[0].name
+            drawTextView?.text = "xx"
+        }
+        p1Trade0Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p1Hand, 0, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p1Hand, 0)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p1TextView, p1Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p1Hand, 0, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p1Hand, 0)//update hand
+                showCard(p1TextView, p1Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p1Trade1Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p1Hand, 1, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p1Hand, 1)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p1TextView, p1Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p1Hand, 1, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p1Hand, 1)//update hand
+                showCard(p1TextView, p1Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p1Trade2Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p1Hand, 2, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p1Hand, 2)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p1TextView, p1Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p1Hand, 2, discardPile, 0)
+                swapCard(deck, 0, p1Hand, 2)
+                showCard(p1TextView, p1Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p1Trade3Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p1Hand, 3, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p1Hand, 3)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p1TextView, p1Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p1Hand, 3, discardPile, 0)
+                swapCard(deck, 0, p1Hand, 3)
+                showCard(p1TextView, p1Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                drawTextView?.text = "xx"
+            }
+        }
+        p1Trade4Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p1Hand, 4, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p1Hand, 4)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p1TextView, p1Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p1Hand, 4, discardPile, 0)
+                swapCard(deck, 0, p1Hand, 4)
+                showCard(p1TextView, p1Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p1Trade5Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p1Hand, 5, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p1Hand, 5)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p1TextView, p1Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p1Hand, 5, discardPile, 0)
+                swapCard(deck, 0, p1Hand, 5)
+                showCard(p1TextView, p1Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        //end p1 turn
+        //p2 turn
+        p2Show2Button?.setOnClickListener {
+            p2Hand[2].faceUp = true
+            showCard(p2TextView, p2Hand)
+            p2.faceUpCards++
+        }
+        p2Show3Button?.setOnClickListener {
+            p2Hand[3].faceUp = true
+            showCard(p2TextView, p2Hand)
+            p2.faceUpCards++
+        }
+        p2Show4Button?.setOnClickListener {
+            p2Hand[4].faceUp = true
+            showCard(p2TextView, p2Hand)
+            p2.faceUpCards++
+        }
+        p2Show5Button?.setOnClickListener {
+            p2Hand[5].faceUp = true
+            showCard(p2TextView, p2Hand)
+            p2.faceUpCards++
+        }
+        discardTradeButton?.setOnClickListener {
+            cardFromDisPile = true
+        }
+        /*drawButton?.setOnClickListener {
+            drawTextView?.text = deck[0].name
+            deck[0].faceUp = true
+        }*/
+        drawDiscardButton?.setOnClickListener {
+            swapCard(deck, 0, discardPile, 0)
+            discardTextView?.text = discardPile[0].name
+            drawTextView?.text = "xx"
+        }
+        p2Trade0Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p2Hand, 0, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p2Hand, 0)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p2TextView, p2Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p2Hand, 0, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p2Hand, 0)//update hand
+                showCard(p2TextView, p2Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p2Trade1Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p2Hand, 1, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p2Hand, 1)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p2TextView, p2Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p2Hand, 1, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p2Hand, 1)//update hand
+                showCard(p2TextView, p2Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p2Trade2Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p2Hand, 2, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p2Hand, 2)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p2TextView, p2Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p2Hand, 2, discardPile, 0)
+                swapCard(deck, 0, p2Hand, 2)
+                showCard(p2TextView, p2Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p2Trade3Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p2Hand, 3, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p2Hand, 3)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p2TextView, p2Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p2Hand, 3, discardPile, 0)
+                swapCard(deck, 0, p2Hand, 3)
+                showCard(p2TextView, p2Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                drawTextView?.text = "xx"
+            }
+        }
+        p2Trade4Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p2Hand, 4, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p2Hand, 4)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p2TextView, p2Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p2Hand, 4, discardPile, 0)
+                swapCard(deck, 0, p2Hand, 4)
+                showCard(p2TextView, p2Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p2Trade5Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p2Hand, 5, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p2Hand, 5)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p2TextView, p2Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p2Hand, 5, discardPile, 0)
+                swapCard(deck, 0, p2Hand, 5)
+                showCard(p2TextView, p2Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        //end p2 turn
+        //p3 turn
+        p3Show2Button?.setOnClickListener {
+            p3Hand[2].faceUp = true
+            showCard(p3TextView, p3Hand)
+            p3.faceUpCards++
+        }
+        p3Show3Button?.setOnClickListener {
+            p3Hand[3].faceUp = true
+            showCard(p3TextView, p3Hand)
+            p3.faceUpCards++
+        }
+        p3Show4Button?.setOnClickListener {
+            p3Hand[4].faceUp = true
+            showCard(p3TextView, p3Hand)
+            p3.faceUpCards++
+        }
+        p3Show5Button?.setOnClickListener {
+            p3Hand[5].faceUp = true
+            showCard(p3TextView, p3Hand)
+            p3.faceUpCards++
+        }
+        discardTradeButton?.setOnClickListener {
+            cardFromDisPile = true
+        }
+        /*drawButton?.setOnClickListener {
+            drawTextView?.text = deck[0].name
+            deck[0].faceUp = true
+        }*/
+        drawDiscardButton?.setOnClickListener {
+            swapCard(deck, 0, discardPile, 0)
+            discardTextView?.text = discardPile[0].name
+            drawTextView?.text = "xx"
+        }
+        p3Trade0Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p3Hand, 0, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p3Hand, 0)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p3TextView, p3Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p3Hand, 0, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p3Hand, 0)//update hand
+                showCard(p3TextView, p3Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p3Trade1Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p3Hand, 1, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p3Hand, 1)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p3TextView, p3Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p3Hand, 1, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p3Hand, 1)//update hand
+                showCard(p3TextView, p3Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p3Trade2Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p3Hand, 2, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p3Hand, 2)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p3TextView, p3Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p3Hand, 2, discardPile, 0)
+                swapCard(deck, 0, p3Hand, 2)
+                showCard(p3TextView, p3Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p3Trade3Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p3Hand, 3, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p3Hand, 3)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p3TextView, p3Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p3Hand, 3, discardPile, 0)
+                swapCard(deck, 0, p3Hand, 3)
+                showCard(p3TextView, p3Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                drawTextView?.text = "xx"
+            }
+        }
+        p3Trade4Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p3Hand, 4, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p3Hand, 4)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p3TextView, p3Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p3Hand, 4, discardPile, 0)
+                swapCard(deck, 0, p3Hand, 4)
+                showCard(p3TextView, p3Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p3Trade5Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p3Hand, 5, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p3Hand, 5)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p3TextView, p3Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p3Hand, 5, discardPile, 0)
+                swapCard(deck, 0, p3Hand, 5)
+                showCard(p3TextView, p3Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        //end p3 turn
+        //p4 turn
+        p4Show2Button?.setOnClickListener {
+            p4Hand[2].faceUp = true
+            showCard(p4TextView, p4Hand)
+            p4.faceUpCards++
+        }
+        p4Show3Button?.setOnClickListener {
+            p4Hand[3].faceUp = true
+            showCard(p4TextView, p4Hand)
+            p4.faceUpCards++
+        }
+        p4Show4Button?.setOnClickListener {
+            p4Hand[4].faceUp = true
+            showCard(p4TextView, p4Hand)
+            p4.faceUpCards++
+        }
+        p4Show5Button?.setOnClickListener {
+            p4Hand[5].faceUp = true
+            showCard(p4TextView, p4Hand)
+            p4.faceUpCards++
+        }
+        discardTradeButton?.setOnClickListener {
+            cardFromDisPile = true
+        }
+        /*drawButton?.setOnClickListener {
+            drawTextView?.text = deck[0].name
+            deck[0].faceUp = true
+        }*/
+        drawDiscardButton?.setOnClickListener {
+            swapCard(deck, 0, discardPile, 0)
+            discardTextView?.text = discardPile[0].name
+            drawTextView?.text = "xx"
+        }
+        p4Trade0Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p4Hand, 0, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p4Hand, 0)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p4TextView, p4Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p4Hand, 0, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p4Hand, 0)//update hand
+                showCard(p4TextView, p4Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p4Trade1Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p4Hand, 1, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p4Hand, 1)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p4TextView, p4Hand)
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p4Hand, 1, discardPile, 0)//update discardPile
+                swapCard(deck, 0, p4Hand, 1)//update hand
+                showCard(p4TextView, p4Hand)
+                drawTextView?.text = "xx"
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p4Trade2Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p4Hand, 2, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p4Hand, 2)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p4TextView, p4Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p4Hand, 2, discardPile, 0)
+                swapCard(deck, 0, p4Hand, 2)
+                showCard(p4TextView, p4Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p4Trade3Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p4Hand, 3, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p4Hand, 3)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p4TextView, p4Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p4Hand, 3, discardPile, 0)
+                swapCard(deck, 0, p4Hand, 3)
+                showCard(p4TextView, p4Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                drawTextView?.text = "xx"
+            }
+        }
+        p4Trade4Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p4Hand, 4, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p4Hand, 4)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p4TextView, p4Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p4Hand, 4, discardPile, 0)
+                swapCard(deck, 0, p4Hand, 4)
+                showCard(p4TextView, p4Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        p4Trade5Button?.setOnClickListener {
+            if (cardFromDisPile) {
+                swapCard(p4Hand, 5, disSwap, 0)//discardSwapPile
+                swapCard(discardPile, 0, p4Hand, 5)//update hand
+                swapCard(disSwap, 0, discardPile, 0)//update discardPile
+                showCard(p4TextView, p4Hand)
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+                cardFromDisPile = false
+            } else {
+                swapCard(p4Hand, 5, discardPile, 0)
+                swapCard(deck, 0, p4Hand, 5)
+                showCard(p4TextView, p4Hand)
+                drawTextView?.text = "xx"
+                discardPile[0].faceUp = true
+                discardTextView?.text = discardPile[0].name
+            }
+        }
+        //end p4 turn
+    }
+
+    fun resetPlayers(){
+        p1.score = 0
+        p1.myTurn = false
+        p1.faceUpCards = 2
+        p2.score = 0
+        p2.myTurn = false
+        p2.faceUpCards = 2
+        p3.score = 0
+        p3.myTurn = false
+        p3.faceUpCards = 2
+        p4.score = 0
+        p4.myTurn = false
+        p4.faceUpCards = 2
+    }
+    fun resetRound(){
+        //deck, discardPile, p1Hand, p2Hand, p3Hand, p4Hand
+        for(i in 0..5){
+            deck.add(p1Hand.removeAt(0))
+            deck.add(p2Hand.removeAt(0))
+            deck.add(p3Hand.removeAt(0))
+            deck.add(p4Hand.removeAt(0))
+        }
+        for(item in 0 until discardPile.size){
+            deck.add(discardPile.removeAt(0))
+        }
+    }
+    fun showCard(textView: TextView?, oneList: MutableList<playingCard>){
+        val comma: String = "  ,  "
+        val bar: String = "         |         "
+        val blank: String = "xx"
+        var listCase = 0
+        if (oneList[2].faceUp == true) listCase += 8
+        if(oneList[3].faceUp == true) listCase += 4
+        if(oneList[4].faceUp == true) listCase += 2
+        if(oneList[5].faceUp == true) listCase += 1
+        when(listCase){
+            1 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+blank+bar+blank+comma+oneList[5].name
+            2 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+blank+bar+oneList[4].name+comma+blank
+            3 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+blank+bar+oneList[4].name+comma+oneList[5].name
+            4 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+oneList[3].name+bar+blank+comma+blank
+            5 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+oneList[3].name+bar+blank+comma+oneList[5].name
+            6 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+oneList[3].name+bar+oneList[4].name+comma+blank
+            7 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+oneList[3].name+bar+oneList[4].name+comma+oneList[5].name
+            8 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar+oneList[2].name+comma+blank+bar+blank+comma+blank
+            9 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +oneList[2].name+comma+blank+bar+blank+comma+oneList[5].name
+            10 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +oneList[2].name+comma+blank+bar+oneList[4].name+comma+blank
+            11 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +oneList[2].name+comma+blank+bar+oneList[4].name+comma+oneList[5].name
+            12 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +oneList[2].name+comma+oneList[3].name+bar+blank+comma+blank
+            13 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +oneList[2].name+comma+oneList[3].name+bar+blank+comma+oneList[5].name
+            14 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +oneList[2].name+comma+oneList[3].name+bar+oneList[4].name+comma+blank
+            15 -> textView?.text = oneList[0].name+comma+oneList[1].name+bar +oneList[2].name+comma+oneList[3].name+bar+oneList[4].name+comma+oneList[5].name
+            else -> {//Zero Case
+                textView?.text = oneList[0].name+comma+oneList[1].name+bar +blank+comma+blank+bar+blank+comma+blank
+            }
+        }
+    }
+    fun calculateScore(playerHand: MutableList<playingCard>, p: player){
+        var set1 = 0
+        var set2 = 0
+        var set3 = 0
+        if(playerHand[0].rank != playerHand[1].rank){
+            set1 = playerHand[0].cardValue + playerHand[1].cardValue
+        }
+        if(playerHand[2].rank != playerHand[3].rank){
+            set2 = playerHand[2].cardValue + playerHand[3].cardValue
+        }
+        if(playerHand[4].rank != playerHand[5].rank){
+            set3 = playerHand[4].cardValue + playerHand[5].cardValue
+        }
+        p.score = set1 + set2 + set3
+    }
+    fun swapCard(listOne: MutableList<playingCard>, listOneIndex: Int, listTwo: MutableList<playingCard>, listTwoIndex: Int){
+        //take card from listOne add it to listTwo
+        val temp: playingCard = listOne.removeAt(listOneIndex)
+        listTwo.add(listTwoIndex, temp)
+    }
+    fun shuffleCards(d : MutableList<playingCard>){
+        for(item in 0 until 52){
+            val randInt = (0 until 52).random()
+            val temp = d[item]
+            d[item] = d[randInt]
+            d[randInt] = temp
+        }
+    }
+
+}

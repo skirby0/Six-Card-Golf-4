@@ -1,0 +1,56 @@
+package com.example.virib.six_card_golf_4
+
+open class playingCard(val name: String, val rank: String, val cardValue: Int, var faceUp: Boolean) {
+}
+val HA = object : playingCard("HA","Ace",-2,false){}
+val HK = object : playingCard("HK","King",0,false){}
+val HQ = object : playingCard("HQ","Queen",10,false){}
+val HJ = object : playingCard("HJ","Jack",10,false){}
+val HTen = object : playingCard("HT","Ten",10,false){}
+val HNine = object : playingCard("H9","Nine",9,false){}
+val HEight = object : playingCard("H8","Eight",8,false){}
+val HSeven = object : playingCard("H7","Seven",7,false){}
+val HSix = object : playingCard("H6","Six",6,false){}
+val HFive = object : playingCard("H5","Five",5,false){}
+val HFour = object : playingCard("H4","Four",4,false){}
+val HThree = object : playingCard("H3","Three",3,false){}
+val HTwo = object : playingCard("H2","Two",2,false){}
+val DA=object:playingCard("DA","Ace",-2,false){}
+val DK=object:playingCard("DK","King",0,false){}
+val DQ=object:playingCard("DQ","Queen",10,false){}
+val DJ=object:playingCard("DJ","Jack",10,false){}
+val DTen=object:playingCard("DT","Ten",10,false){}
+val DNine=object:playingCard("D9","Nine",9,false){}
+val DEight=object:playingCard("D8","Eight",8,false){}
+val DSeven=object:playingCard("D7","Seven",7,false){}
+val DSix=object:playingCard("D6","Six",6,false){}
+val DFive=object:playingCard("D5","Five",5,false){}
+val DFour=object:playingCard("D4","Four",4,false){}
+val DThree=object:playingCard("D3","Three",3,false){}
+val DTwo=object:playingCard("D2","Two",2,false){}
+val CA = object : playingCard("CA","Ace",-2,false){}
+val CK = object : playingCard("CK","King",0,false){}
+val CQ = object : playingCard("CQ","Queen",10,false){}
+val CJ = object : playingCard("CJ","Jack",10,false){}
+val CTen = object : playingCard("CT","Ten",10,false){}
+val CNine = object : playingCard("C9","Nine",9,false){}
+val CEight = object : playingCard("C8","Eight",8,false){}
+val CSeven = object : playingCard("C7","Seven",7,false){}
+val CSix = object : playingCard("C6","Six",6,false){}
+val CFive = object : playingCard("C5","Five",5,false){}
+val CFour = object : playingCard("C4","Four",4,false){}
+val CThree = object : playingCard("C3","Three",3,false){}
+val CTwo = object : playingCard("C2","Two",2,false){}
+val SA = object : playingCard("SA","Ace",-2,false){}
+val SK = object : playingCard("SK","King",0,false){}
+val SQ = object : playingCard("SQ","Queen",10,false){}
+val SJ = object : playingCard("SJ","Jack",10,false){}
+val STen = object : playingCard("ST","Ten",10,false){}
+val SNine = object : playingCard("S9","Nine",9,false){}
+val SEight = object : playingCard("S8","Eight",8,false){}
+val SSeven = object : playingCard("S7","Seven",7,false){}
+val SSix = object : playingCard("S6","Six",6,false){}
+val SFive = object : playingCard("S5","Five",5,false){}
+val SFour = object : playingCard("S4","Four",4,false){}
+val SThree = object : playingCard("S3","Three",3,false){}
+val STwo = object : playingCard("S2","Two",2,false){}

@@ -1,0 +1,4 @@
+package com.example.virib.six_card_golf_4
+
+open class player(var name: String,var score: Int,var myTurn: Boolean,var faceUpCards: Int) {
+}
